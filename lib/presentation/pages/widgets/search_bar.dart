@@ -1,3 +1,4 @@
+import 'package:dummy_product/presentation/pages/widgets/sort_option_bar.dart';
 import 'package:dummy_product/presentation/providers/search_text_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,20 +52,8 @@ class _SearchBarWithFilterState extends ConsumerState<SearchBarWithFilter> {
             ),
           ),
         ),
-
         const SizedBox(width: 12),
-
-        // Filter Button
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {},
-          ),
-        ),
+        const SortOptionBar()
       ],
     );
   }

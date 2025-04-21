@@ -3,7 +3,6 @@ import 'package:dummy_product/presentation/pages/products_list.dart';
 import 'package:dummy_product/presentation/providers/search_text_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'presentation/pages/widgets/search_bar.dart';
 
 void main() {

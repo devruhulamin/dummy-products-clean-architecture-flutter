@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dummy_product/domain/entities/product.dart';
 import 'package:dummy_product/presentation/providers/product_repo_provider.dart';
+import 'package:dummy_product/presentation/providers/sort_provider.dart';
+import 'package:dummy_product/utility/extensions/sort_option_ext.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final productsNotifierProvider =
@@ -22,7 +24,10 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     final productsRepo = ref.read(productRepoProvider);
     _skip = 0;
     _hasNext = true;
-    return productsRepo.fetchProducts(skip: _skip);
+    final sortValue = ref.read(sortOptionsProvider);
+    final products = await productsRepo.fetchProducts(skip: _skip);
+    products.sort(sortValue.getComparator);
+    return products;
   }
 
   Future<void> loadMoreProducts({String searchQuery = ''}) async {
@@ -40,6 +45,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
         _hasNext = false;
         return;
       }
+      final sortValue = ref.read(sortOptionsProvider);
+      newProducts.sort(sortValue.getComparator);
       state = AsyncValue.data([...previous, ...newProducts]);
     } catch (e, trace) {
       state = AsyncValue.error(e, trace);
@@ -54,8 +61,13 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
       final productsRepo = ref.read(productRepoProvider);
       _skip = 0;
       _hasNext = true;
+
       final srcpdData = await productsRepo.fetchProducts(
           skip: _skip, searchQuery: searchQuery);
+
+      final sortValue = ref.read(sortOptionsProvider);
+      srcpdData.sort(sortValue.getComparator);
+
       state = AsyncValue.data(srcpdData);
     } catch (e, trace) {
       state = AsyncValue.error(e, trace);

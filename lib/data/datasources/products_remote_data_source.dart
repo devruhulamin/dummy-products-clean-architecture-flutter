@@ -27,7 +27,7 @@ class ProductsRemoteDataSource {
       {int skip = 0, String searchQuery = ''}) async {
     try {
       final response = await dio.get(
-        '/products?limit=$_limit&skip=$skip&search?q=$searchQuery',
+        '/products?search?q=$searchQuery&limit=$_limit&skip=$skip',
       );
       print(
           'api calling ---->/products?limit=$_limit&skip=$skip&search?q=$searchQuery <---------');
