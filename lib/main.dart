@@ -1,5 +1,6 @@
 import 'package:dummy_product/presentation/notifier/products_notifier.dart';
 import 'package:dummy_product/presentation/pages/products_list.dart';
+import 'package:dummy_product/presentation/providers/search_text_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,6 +39,7 @@ class MainApp extends ConsumerWidget {
         child: RefreshIndicator(
           onRefresh: () {
             productsNotifier.refreshProducts();
+            ref.read(searchTextProvider.notifier).state = '';
             return Future.value();
           },
           child: const Scaffold(

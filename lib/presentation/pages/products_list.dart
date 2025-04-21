@@ -1,15 +1,34 @@
 import 'package:dummy_product/presentation/notifier/products_notifier.dart';
 import 'package:dummy_product/presentation/pages/widgets/product_card.dart';
+import 'package:dummy_product/presentation/providers/search_text_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProductsList extends ConsumerWidget {
+class ProductsList extends ConsumerStatefulWidget {
   const ProductsList({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProductsListState();
+}
+
+class _ProductsListState extends ConsumerState<ProductsList> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final products = ref.watch(productsNotifierProvider);
     final productsNotifier = ref.watch(productsNotifierProvider.notifier);
+    ref.listen(
+      searchTextProvider,
+      (previous, next) {
+        if (next.isNotEmpty) {
+          ref.read(productsNotifierProvider.notifier).searchProducts(next);
+        }
+      },
+    );
 
     return Padding(
         padding: const EdgeInsets.all(8.0),
@@ -41,16 +60,30 @@ class ProductsList extends ConsumerWidget {
                     onFavoriteTapped: (productId) {},
                   );
                 }
-                productsNotifier.loadMoreProducts();
+                final searchText = ref.read(searchTextProvider);
+                if (searchText.isNotEmpty) {
+                  productsNotifier.loadMoreProducts(searchQuery: searchText);
+                } else {
+                  productsNotifier.loadMoreProducts();
+                }
                 return const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Center(child: CircularProgressIndicator()),
                 );
               });
         }, error: (err, trace) {
-          print(err);
-          print(trace);
-          return null;
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Something Went Wrong"),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                    onPressed: () => productsNotifier.refreshProducts(),
+                    child: const Text("Retry")),
+              ],
+            ),
+          );
         }, loading: () {
           return const Center(
             child: CircularProgressIndicator(),

@@ -1,15 +1,16 @@
+import 'package:dummy_product/presentation/providers/search_text_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SearchBarWithFilter extends StatefulWidget {
-  const SearchBarWithFilter({
-    super.key,
-  });
+class SearchBarWithFilter extends ConsumerStatefulWidget {
+  const SearchBarWithFilter({super.key});
 
   @override
-  State<SearchBarWithFilter> createState() => _SearchBarWithFilterState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _SearchBarWithFilterState();
 }
 
-class _SearchBarWithFilterState extends State<SearchBarWithFilter> {
+class _SearchBarWithFilterState extends ConsumerState<SearchBarWithFilter> {
   final searchCon = TextEditingController();
 
   @override
@@ -20,9 +21,9 @@ class _SearchBarWithFilterState extends State<SearchBarWithFilter> {
 
   @override
   Widget build(BuildContext context) {
+    final searchTextNotifer = ref.read(searchTextProvider.notifier);
     return Row(
       children: [
-        // Search TextField
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -36,6 +37,9 @@ class _SearchBarWithFilterState extends State<SearchBarWithFilter> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    onChanged: (value) {
+                      searchTextNotifer.state = value;
+                    },
                     controller: searchCon,
                     decoration: const InputDecoration(
                       hintText: 'Search',

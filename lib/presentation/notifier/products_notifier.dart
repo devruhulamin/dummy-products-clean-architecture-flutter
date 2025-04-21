@@ -25,7 +25,7 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
     return productsRepo.fetchProducts(skip: _skip);
   }
 
-  Future<void> loadMoreProducts() async {
+  Future<void> loadMoreProducts({String searchQuery = ''}) async {
     if (!_hasNext || state.isLoading || state is AsyncLoading) return;
 
     try {
@@ -34,12 +34,29 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
       final productsRepo = ref.read(productRepoProvider);
       _skip += 10;
 
-      final newProducts = await productsRepo.fetchProducts(skip: _skip);
+      final newProducts = await productsRepo.fetchProducts(
+          skip: _skip, searchQuery: searchQuery);
       if (newProducts.isEmpty) {
         _hasNext = false;
         return;
       }
       state = AsyncValue.data([...previous, ...newProducts]);
+    } catch (e, trace) {
+      state = AsyncValue.error(e, trace);
+    }
+  }
+
+  Future<void> searchProducts(String searchQuery) async {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    state = const AsyncLoading();
+    try {
+      final productsRepo = ref.read(productRepoProvider);
+      _skip = 0;
+      _hasNext = true;
+      final srcpdData = await productsRepo.fetchProducts(
+          skip: _skip, searchQuery: searchQuery);
+      state = AsyncValue.data(srcpdData);
     } catch (e, trace) {
       state = AsyncValue.error(e, trace);
     }

@@ -9,12 +9,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
   ProductsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Product>> fetchProducts({int skip = 0}) {
-    return remoteDataSource.fetchProducts(skip: skip);
-  }
-
-  @override
-  Future<List<Product>> searchProducts(String query) {
-    return remoteDataSource.searchProducts(query);
+  Future<List<Product>> fetchProducts({int skip = 0, String searchQuery = ''}) {
+    return remoteDataSource.fetchProducts(skip: skip, searchQuery: searchQuery);
   }
 }

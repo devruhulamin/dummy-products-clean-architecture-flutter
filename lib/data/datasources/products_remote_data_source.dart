@@ -23,29 +23,20 @@ class ProductsRemoteDataSource {
     );
   }
 
-  Future<List<ProductModel>> fetchProducts({int skip = 0}) async {
+  Future<List<ProductModel>> fetchProducts(
+      {int skip = 0, String searchQuery = ''}) async {
     try {
-      final response = await dio.get('/products?limit=$_limit&skip=$skip');
+      final response = await dio.get(
+        '/products?limit=$_limit&skip=$skip&search?q=$searchQuery',
+      );
+      print(
+          'api calling ---->/products?limit=$_limit&skip=$skip&search?q=$searchQuery <---------');
       final data = response.data as Map<String, dynamic>;
       final productJson = data['products'] as List<dynamic>;
+      print("\n and response is $productJson");
       return productJson.map((e) => ProductModel.fromJson(e)).toList();
     } on DioException catch (e) {
       throw Exception('Failed to fetch products: ${e.message}');
-    }
-  }
-
-  Future<List<ProductModel>> searchProducts(String query) async {
-    try {
-      final response = await dio.get(
-        '/products/search',
-        queryParameters: {'q': query.trim()},
-      );
-      final data = response.data as List<dynamic>;
-      return data
-          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception('Product search failed: ${e.message}');
     }
   }
 
