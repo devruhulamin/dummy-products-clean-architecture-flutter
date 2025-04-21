@@ -6,6 +6,7 @@ import '../models/product_model.dart';
 class ProductsRemoteDataSource {
   final Dio dio;
   final String baseUrl;
+  final int _limit = 12;
 
   ProductsRemoteDataSource({
     required this.dio,
@@ -22,9 +23,9 @@ class ProductsRemoteDataSource {
     );
   }
 
-  Future<List<ProductModel>> fetchProducts() async {
+  Future<List<ProductModel>> fetchProducts({int skip = 0}) async {
     try {
-      final response = await dio.get('/products?limit=100');
+      final response = await dio.get('/products?limit=$_limit&skip=$skip');
       final data = response.data as Map<String, dynamic>;
       final productJson = data['products'] as List<dynamic>;
       return productJson.map((e) => ProductModel.fromJson(e)).toList();
