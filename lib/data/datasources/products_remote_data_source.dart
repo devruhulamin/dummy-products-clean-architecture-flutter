@@ -25,10 +25,9 @@ class ProductsRemoteDataSource {
   Future<List<ProductModel>> fetchProducts() async {
     try {
       final response = await dio.get('/products?limit=100');
-      final data = response.data as List<dynamic>;
-      return data
-          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final data = response.data as Map<String, dynamic>;
+      final productJson = data['products'] as List<dynamic>;
+      return productJson.map((e) => ProductModel.fromJson(e)).toList();
     } on DioException catch (e) {
       throw Exception('Failed to fetch products: ${e.message}');
     }
